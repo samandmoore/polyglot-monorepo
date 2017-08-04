@@ -27,3 +27,9 @@ jobs:
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+workflows:
+  version: 2
+  test_all:
+    jobs:
+      - ruby_app_one
+      - java_app_one
