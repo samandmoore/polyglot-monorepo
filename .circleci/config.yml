@@ -7,7 +7,7 @@ ruby_app: &ruby_app
     - checkout
     - run:
         command: ruby hello_world.rb
-        working_directory: ~/repo/${CIRCLE_JOB}
+        working_directory: ~/repo/{{ .Environment.circleJob }}
 
 version: 2
 jobs:
@@ -29,10 +29,10 @@ jobs:
       - checkout
       - run:
           command: javac HelloWorld.java
-          working_directory: ~/repo/${CIRCLE_JOB}
+          working_directory: ~/repo/{{ .Environment.circleJob }}
       - run:
           command: java HelloWorld
-          working_directory: ~/repo/${CIRCLE_JOB}
+          working_directory: ~/repo/{{ .Environment.circleJob }}
 workflows:
   version: 2
   test_all:
