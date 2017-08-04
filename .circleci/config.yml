@@ -11,7 +11,7 @@ ruby_app: &ruby_app
 
 java_app: &java_app
   docker:
-    - image: circleci/openjdk:ruby hello_world.rb8
+    - image: circleci/openjdk:8
   working_directory: ~/repo
   steps:
     - checkout
