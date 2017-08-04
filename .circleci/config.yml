@@ -18,7 +18,7 @@ java_app: &java_app
     - run:
         command: |
           cd ~/repo/$CIRCLE_JOB
-          javac HelloWorld.jav
+          javac HelloWorld.java
           java HelloWorld
 
 version: 2
