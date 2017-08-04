@@ -36,5 +36,6 @@ workflows:
   version: 2
   test_all:
     jobs:
+      - ruby_app_one_fancy
       - ruby_app_one
       - java_app_one
