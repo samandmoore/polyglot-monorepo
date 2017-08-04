@@ -5,24 +5,28 @@ ruby_app: &ruby_app
   steps:
     - checkout
     - run:
-        command: cd ~/repo/$CIRCLE_JOB && ruby hello_world.rb
+        command: |
+          cd ~/repo/$CIRCLE_JOB
+          ruby hello_world.rb
+
+java_app: &java_app
+  docker:
+    - image: circleci/openjdk:ruby hello_world.rb8
+  working_directory: ~/repo
+  steps:
+    - checkout
+    - run:
+        command: |
+          cd ~/repo/$CIRCLE_JOB
+          javac HelloWorld.jav
+          java HelloWorld
 
 version: 2
 jobs:
   ruby_app_one:
     <<: *ruby_app
   java_app_one:
-    docker:
-      - image: circleci/openjdk:8
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: javac HelloWorld.java
-          working_directory: ~/repo/java_app_one
-      - run:
-          command: java HelloWorld
-          working_directory: ~/repo/java_app_one
+    <<: *java_app
 workflows:
   version: 2
   test_all:
