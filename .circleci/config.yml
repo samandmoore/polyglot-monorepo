@@ -1,20 +1,19 @@
 ruby_app: &ruby_app
   docker:
     - image: circleci/ruby:2.4.1-node-browsers
-    - image: circleci/postgres:9.4
   working_directory: ~/repo
   steps:
     - checkout
     - run:
-        command: ruby hello_world.rb
-        working_directory: ~/repo/{{ .Environment.circleJob }}
+        command: cd $CIRCLE_JOB && ruby hello_world.rb
 
 version: 2
 jobs:
+  ruby_app_one_fancy:
+    <<: *ruby_app
   ruby_app_one:
     docker:
       - image: circleci/ruby:2.4.1-node-browsers
-      - image: circleci/postgres:9.4
     working_directory: ~/repo
     steps:
       - checkout
@@ -29,10 +28,10 @@ jobs:
       - checkout
       - run:
           command: javac HelloWorld.java
-          working_directory: ~/repo/{{ .Environment.circleJob }}
+          working_directory: ~/repo/java_app_one
       - run:
           command: java HelloWorld
-          working_directory: ~/repo/{{ .Environment.circleJob }}
+          working_directory: ~/repo/java_app_one
 workflows:
   version: 2
   test_all:
