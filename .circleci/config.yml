@@ -5,9 +5,7 @@ ruby_app: &ruby_app
   steps:
     - checkout
     - run:
-        command: cd ~/repo/$CIRCLE_JOB
-    - run:
-        command: ruby hello_world.rb
+        command: cd ~/repo/$CIRCLE_JOB && ruby hello_world.rb
 
 version: 2
 jobs:
