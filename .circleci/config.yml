@@ -10,24 +10,22 @@
 ruby_app: &ruby_app
   docker:
     - image: circleci/ruby:2.4.1-node-browsers
-  working_directory: ~/repo
   steps:
     - checkout
     - run:
         command: |
-          cd ~/repo/$CIRCLE_JOB
+          cd $CIRCLE_JOB
           ruby hello_world.rb
 
 # template for java apps
 java_app: &java_app
   docker:
     - image: circleci/openjdk:8
-  working_directory: ~/repo
   steps:
     - checkout
     - run:
         command: |
-          cd ~/repo/$CIRCLE_JOB
+          cd $CIRCLE_JOB
           javac HelloWorld.java
           java HelloWorld
 
