@@ -1,3 +1,12 @@
+# ========= templates for jobs ============
+# because, in my experience, most apps of a given
+# type want to have the same steps. the only difference
+# is the directory that you cd into to start the build.
+# in this case, we are using $CICLE_JOB as a hack to
+# tell the template which directory to cd into. this works
+# because we named the job the same thing as the directory.
+
+# template for ruby apps
 ruby_app: &ruby_app
   docker:
     - image: circleci/ruby:2.4.1-node-browsers
@@ -9,6 +18,7 @@ ruby_app: &ruby_app
           cd ~/repo/$CIRCLE_JOB
           ruby hello_world.rb
 
+# template for java apps
 java_app: &java_app
   docker:
     - image: circleci/openjdk:8
@@ -21,8 +31,11 @@ java_app: &java_app
           javac HelloWorld.java
           java HelloWorld
 
+# ========= jobs & workflows ============
 version: 2
 jobs:
+  # these specific jobs will each run according
+  # to the above templates
   ruby_app_one:
     <<: *ruby_app
   ruby_app_two:
