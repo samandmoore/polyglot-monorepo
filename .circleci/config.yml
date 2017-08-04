@@ -9,17 +9,8 @@ ruby_app: &ruby_app
 
 version: 2
 jobs:
-  ruby_app_one_fancy:
-    <<: *ruby_app
   ruby_app_one:
-    docker:
-      - image: circleci/ruby:2.4.1-node-browsers
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: ruby hello_world.rb
-          working_directory: ~/repo/ruby_app_one
+    <<: *ruby_app
   java_app_one:
     docker:
       - image: circleci/openjdk:8
@@ -36,6 +27,5 @@ workflows:
   version: 2
   test_all:
     jobs:
-      - ruby_app_one_fancy
       - ruby_app_one
       - java_app_one
