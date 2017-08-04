@@ -1,51 +1,89 @@
-# ========= templates for jobs ============
-# because, in my experience, most apps of a given
-# type want to have the same steps. the only difference
-# is the directory that you cd into to start the build.
-# in this case, we are using $CICLE_JOB as a hack to
-# tell the template which directory to cd into. this works
-# because we named the job the same thing as the directory.
-
-# template for ruby apps
-ruby_app: &ruby_app
-  docker:
-    - image: circleci/ruby:2.4.1-node-browsers
-  working_directory: ~/repo
-  steps:
-    - checkout
-    - run:
-        command: |
-          cd ~/repo/$CIRCLE_JOB
-          ruby hello_world.rb
-
-# template for java apps
-java_app: &java_app
-  docker:
-    - image: circleci/openjdk:8
-  working_directory: ~/repo
-  steps:
-    - checkout
-    - run:
-        command: |
-          cd ~/repo/$CIRCLE_JOB
-          javac HelloWorld.java
-          java HelloWorld
-
-# ========= jobs & workflows ============
 version: 2
 jobs:
-  # these specific jobs will each run according
-  # to the above templates
-  ruby_app_one:
-    <<: *ruby_app
-  ruby_app_two:
-    <<: *ruby_app
-  java_app_one:
-    <<: *java_app
+  test:
+    docker:
+      - image: circleci/ruby:2.4.1-node
+      - image: circleci/postgres:9.4.12-alpine
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+
+      # Bundle install dependencies
+      - run: bundle install --path rails_app/vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+
+      # Database setup
+      - run:
+          command: |
+            cd rails_app
+            bundle exec rake db:create db:schema:load
+
+      # Run rspec in parallel
+      - run:
+          command: |
+            cd rails_app
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out /tmp/test-results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # Save artifacts
+      - type: store_test_results
+        path: /tmp/test-results
+
+  build:
+    docker:
+      - image: circleci/ruby:2.4.1-node
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+
+      # Bundle install dependencies
+      - run: bundle install --path rails_app/vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+
+      - run:
+          command: |
+            git_revision=$(git rev-parse HEAD)
+            cd rails_app
+            docker build -t polyglot-monorepo/rails_app:$git_revision .
+            docker tag rails_app:$git_revision
+            # ecr-login
+            # find-or-create ecr repo for rails_app
+            # docker push $ecr-repo/rails_app:$git_revision
+
+  deploy:
+    steps:
+      - checkout
+      - run:
+          command: |
+            cd rails_app
+            ./deploy.sh
+
 workflows:
   version: 2
-  test_all:
+  build_all:
     jobs:
-      - ruby_app_one
-      - ruby_app_two
-      - java_app_one
+      - build
+      - test
+      - deploy:
+          requires:
+            - build
+            - test
