@@ -1,3 +1,8 @@
+PATH
+  remote: ../local_gem
+  specs:
+    local_gem (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -155,6 +160,7 @@ DEPENDENCIES
   byebug
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
+  local_gem!
   mini_racer
   puma (~> 3.7)
   rails (~> 5.1.3)
