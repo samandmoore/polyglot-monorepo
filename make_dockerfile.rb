@@ -51,7 +51,7 @@ lines << <<~CHUNK
 # RUN bundle install --path vendor/bundle --without development:test
 CHUNK
 lines << "ADD ./#{app_name} $APP_HOME"
-lines << "# RUN bundle exec rake RAILS_ENV=production assets:precompile"
+lines << "# RUN bundle exec rake assets:precompile"
 lines << "EXPOSE 3000"
 lines << <<~CHUNK
 CMD ["rails", "server", "-b", "0.0.0.0"]"
