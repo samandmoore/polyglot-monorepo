@@ -50,7 +50,7 @@ lines << <<~CHUNK
 # no matter what, we need to add this line in.
 # RUN bundle install --path vendor/bundle --without development:test
 CHUNK
-lines << "ADD ./#{app_name} $APP_HOME"
+lines << "ADD #{app_name} $APP_HOME"
 lines << "# RUN bundle exec rake assets:precompile"
 lines << "EXPOSE 3000"
 lines << <<~CHUNK
