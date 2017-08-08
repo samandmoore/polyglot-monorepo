@@ -61,10 +61,7 @@ jobs:
 
       - run:
           command: |
-            git_revision=$(git rev-parse HEAD)
-            cd rails_app
-            docker build -t polyglot-monorepo/rails_app:$git_revision .
-            docker tag rails_app:$git_revision
+            ./build.sh rails_app
             # ecr-login
             # find-or-create ecr repo for rails_app
             # docker push $ecr-repo/rails_app:$git_revision
