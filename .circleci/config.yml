@@ -66,13 +66,13 @@ jobs:
             # find-or-create ecr repo for rails_app
             # docker push $ecr-repo/rails_app:$git_revision
 
-  deploy:
-    steps:
-      - checkout
-      - run:
-          command: |
-            cd rails_app
-            ./deploy.sh
+  # deploy:
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         command: |
+  #           cd rails_app
+  #           ./deploy.sh
 
 workflows:
   version: 2
@@ -80,7 +80,7 @@ workflows:
     jobs:
       - build
       - test
-      - deploy:
-          requires:
-            - build
-            - test
+      # - deploy:
+      #     requires:
+      #       - build
+      #       - test
