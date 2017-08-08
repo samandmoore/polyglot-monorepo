@@ -47,6 +47,7 @@ jobs:
     docker:
       - image: circleci/ruby:2.4.1-node
     steps:
+      - setup_remote_docker
       - checkout
 
       # Restore bundle cache
