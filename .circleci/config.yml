@@ -12,7 +12,10 @@ jobs:
         key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
 
       # Bundle install dependencies
-      - run: bundle install --path rails_app/vendor/bundle
+      - run:
+          command: |
+            cd rails_app
+            bundle install --path vendor/bundle
 
       # Store bundle cache
       - type: cache-save

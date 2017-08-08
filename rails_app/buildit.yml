@@ -1,0 +1,13 @@
+type: rails_app
+ruby: 2.3.1
+services:
+  - "postgres:9.4.12"
+
+# eventually...
+gemfiles:
+  - Gemfile
+  - gemfiles/rails5.1.gemfile
+
+test_rubies:
+  - 2.3.1
+  - 2.4.0
