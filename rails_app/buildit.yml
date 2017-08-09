@@ -1,4 +1,4 @@
-type: rails_app
+type: ruby_app
 ruby: 2.3.1
 services:
   - "postgres:9.4.12"
