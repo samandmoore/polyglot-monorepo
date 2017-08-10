@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  test:
+  "rails_app/test":
     docker:
       - image: circleci/ruby:2.4.1-node
       - image: circleci/postgres:9.4.12-alpine
@@ -43,7 +43,7 @@ jobs:
       - type: store_test_results
         path: /tmp/test-results
 
-  build:
+  "rails_app/build":
     docker:
       - image: circleci/ruby:2.4.1-node
     steps:
@@ -73,21 +73,9 @@ jobs:
             # find-or-create ecr repo for rails_app
             # docker push $ecr-repo/rails_app:$git_revision
 
-  # deploy:
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         command: |
-  #           cd rails_app
-  #           ./deploy.sh
-
 workflows:
   version: 2
-  build_all:
+  all:
     jobs:
-      - build
-      - test
-      # - deploy:
-      #     requires:
-      #       - build
-      #       - test
+      - "rails_app/build"
+      - "rails_app/test"
