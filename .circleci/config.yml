@@ -1,5 +1,47 @@
 version: 2
 jobs:
+  "local_gem/test":
+    docker:
+      - image: circleci/ruby:2.4.1-node
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: local_gem-{{ checksum "local_gem/Gemfile.lock" }}
+
+      # Bundle install dependencies
+      - run:
+          command: |
+            cd rails_app
+            bundle install --path vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: local_gem-{{ checksum "local_gem/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+
+      # Database setup
+      - run:
+          command: |
+            cd local_gem
+            bundle exec rake db:create db:schema:load
+
+      # Run rspec in parallel
+      - run:
+          command: |
+            cd local_gem
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out /tmp/test-results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # Save artifacts
+      - type: store_test_results
+        path: /tmp/test-results
+
   "rails_app/test":
     docker:
       - image: circleci/ruby:2.4.1-node
@@ -77,5 +119,6 @@ workflows:
   version: 2
   all:
     jobs:
+      - "local_gem/test"
       - "rails_app/build"
       - "rails_app/test"
