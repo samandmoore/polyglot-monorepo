@@ -8,25 +8,19 @@ jobs:
 
       # Restore bundle cache
       - type: cache-restore
-        key: local_gem-{{ checksum "local_gem/Gemfile.lock" }}
+        key: local_gem-{{ checksum "local_gem/local_gem.gemspec" }}
 
       # Bundle install dependencies
       - run:
           command: |
-            cd rails_app
+            cd local_gem
             bundle install --path vendor/bundle
 
       # Store bundle cache
       - type: cache-save
-        key: local_gem-{{ checksum "local_gem/Gemfile.lock" }}
+        key: local_gem-{{ checksum "local_gem/local_gem.gemspec" }}
         paths:
-          - rails_app/vendor/bundle
-
-      # Database setup
-      - run:
-          command: |
-            cd local_gem
-            bundle exec rake db:create db:schema:load
+          - local_gem/vendor/bundle
 
       # Run rspec in parallel
       - run:
@@ -45,6 +39,9 @@ jobs:
   "rails_app/test":
     docker:
       - image: circleci/ruby:2.4.1-node
+        environment:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://postgres@localhost/rails_app_test
       - image: circleci/postgres:9.4.12-alpine
     steps:
       - checkout

@@ -44,3 +44,10 @@ to figure out:
   you. we can consider doing that differently, but this is much simpler.
 * can we use a simpler base image? the current ruby base images are
   yuuuuuge (>1GB). 
+
+
+ruby thoughts
+* we need to distinguish between ruby gems and local gems that don't get
+  published (acting more as a library).
+  * for a ruby gem we don't check in the gemfile.lock, so we can't use
+    that as the cache key for the bundle
