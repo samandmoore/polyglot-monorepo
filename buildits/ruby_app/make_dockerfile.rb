@@ -15,7 +15,7 @@ def build_local_gem_lines(app_name)
 end
 
 BASE = <<~DOCKERFILE
-FROM circleci/ruby:2.4.1-node
+FROM ruby:2.3.1
 
 RUN apt-get update -qq && apt-get install -y build-essential
 
