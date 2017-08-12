@@ -11,3 +11,8 @@ gemfiles:
 test_rubies:
   - 2.3.1
   - 2.4.0
+
+lint:
+  rubocop: bundle exec rubocop --format html --out rubocop.html
+  brakeman: bundle exec brakeman --exit-on-warn -o brakeman.xml
+  scss_lint: bundle exec scss-lint --format=JSON --out scss_lint.json

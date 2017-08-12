@@ -1,0 +1,137 @@
+scss_files: 'app/assets/stylesheets'
+linters:
+  BangFormat:
+    enabled: true
+    space_before_bang: true
+  BemDepth:
+    enabled: false
+  BorderZero:
+    enabled: true
+    convention: zero
+  ChainedClasses:
+    enabled: false
+  ColorKeyword:
+    enabled: true
+  ColorVariable:
+    enabled: true
+  Comment:
+    enabled: false
+  DebugStatement:
+    enabled: true
+  DeclarationOrder:
+    enabled: false
+  DisableLinterReason:
+    enabled: false
+  DuplicateProperty:
+    enabled: true
+  ElsePlacement:
+    enabled: true
+    style: same_line
+  EmptyLineBetweenBlocks:
+    enabled: true
+    ignore_single_line_blocks: true
+  EmptyRule:
+    enabled: true
+  ExtendDirective:
+    enabled: false
+  FinalNewline:
+    enabled: true
+    present: true
+  HexLength:
+    enabled: true
+    style: long
+  HexNotation:
+    enabled: false
+  HexValidation:
+    enabled: true
+  IdSelector:
+    enabled: false
+  ImportantRule:
+    enabled: true
+  ImportPath:
+    enabled: true
+    leading_underscore: false
+    filename_extension: false
+  Indentation:
+    enabled: true
+    character: space
+    width: 4
+  LeadingZero:
+    enabled: true
+    style: include_zero
+  MergeableSelector:
+    enabled: true
+  NameFormat:
+    enabled: true
+    convention: hyphenated_lowercase
+  NestingDepth:
+    enabled: false
+  PlaceholderInExtend:
+    enabled: true
+  PropertyCount:
+    enabled: false
+  PropertySortOrder:
+    enabled: false
+  PropertySpelling:
+    enabled: true
+  PropertyUnits:
+    enabled: true
+  PseudoElement:
+    enabled: false
+  QualifyingElement:
+    enabled: false
+  SelectorDepth:
+    enabled: false
+  SelectorFormat:
+    enabled: false
+  Shorthand:
+    enabled: true
+  SingleLinePerProperty:
+    enabled: true
+    allow_single_line_rule_sets: true
+  SingleLinePerSelector:
+    enabled: false
+  SpaceAfterComma:
+    enabled: true
+    style: one_space
+  SpaceAfterPropertyColon:
+    enabled: true
+    style: one_space
+  SpaceAfterPropertyName:
+    enabled: true
+  SpaceAfterVariableName:
+    enabled: true
+  SpaceAroundOperator:
+    enabled: true
+    style: one_space
+  SpaceBeforeBrace:
+    enabled: true
+    allow_single_line_padding: true
+    style: space
+  SpaceBetweenParens:
+    enabled: true
+    spaces: 0
+  StringQuotes:
+    enabled: false
+  TrailingSemicolon:
+    enabled: true
+  TransitionAll:
+    enabled: false
+  UnnecessaryMantissa:
+    enabled: true
+  UnnecessaryParentReference:
+    enabled: true
+  UrlFormat:
+    enabled: true
+  UrlQuotes:
+    enabled: true
+  VariableForProperty:
+    enabled: true
+    properties:
+      - font-weight
+      - font-family
+  VendorPrefix:
+    enabled: true
+    identifier_list: bourbon
+  ZeroUnit:
+    enabled: true
