@@ -51,3 +51,17 @@ ruby thoughts
   published (acting more as a library).
   * for a ruby gem we don't check in the gemfile.lock, so we can't use
     that as the cache key for the bundle
+
+project types
+* rails_app
+  * uses gemfile.lock
+  * builds a tarball | docker image
+  * publishes tarballs to s3 | docker images to ECR repository
+* ruby_gem
+  * doesn't use gemfile.lock
+  * publishes to rubygems
+  * builds a .gem file
+* ruby_local_gem
+  * doesn't publish to rubygems
+  * doesn't use gemfile.lock
+  * builds nothing
