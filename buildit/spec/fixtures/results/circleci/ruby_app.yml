@@ -1,0 +1,61 @@
+version: 2
+jobs:
+  "rails_app/test":
+    docker:
+      - image: circleci/ruby:2.4.1-node
+        environment:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://postgres@localhost/rails_app_test
+      - image: circleci/postgres:9.4.12-alpine
+    steps:
+      - checkout
+      - type: cache-restore
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+      - run:
+          command: |
+            cd rails_app
+            bundle install --path vendor/bundle
+      - type: cache-save
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+      - run:
+          command: |
+            cd rails_app
+            bundle exec rake db:create db:schema:load
+      - run:
+          command: |
+            cd rails_app
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out /tmp/test-results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      - type: store_test_results
+        path: /tmp/test-results
+
+  "rails_app/build":
+    docker:
+      - image: circleci/ruby:2.4.1-node
+    steps:
+      - checkout
+      - type: cache-restore
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+      - run:
+          command: |
+            cd rails_app
+            bundle install --path vendor/bundle
+      - type: cache-save
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+      - run:
+          command: |
+            tar -z --exclude='.git' -C rails_app -cf slug.tgz . | cat
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - "rails_app/build"
+      - "rails_app/test"
