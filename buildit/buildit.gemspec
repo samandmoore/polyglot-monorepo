@@ -16,9 +16,9 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
   s.executables = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
-  s.add_dependency "tilt"
+  s.add_dependency "tilt", "~> 2.0.0"
 
-  s.add_development_dependency "rspec"
+  s.add_development_dependency "rspec", "~> 3.5"
 
   s.required_ruby_version = ">= 2"
 end
