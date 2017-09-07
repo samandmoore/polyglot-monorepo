@@ -7,6 +7,9 @@ test_rubies:
   - 2.3.1
   - 2.4.0
 
+# rather than expressing these like this, let's just assume them
+# if we find that we actually want any of them to be optional then
+# we can write detection wrappers around them
 lint:
   rubocop: bundle exec rubocop --format html --out rubocop.html
   brakeman: bundle exec brakeman --exit-on-warn -o brakeman.xml
