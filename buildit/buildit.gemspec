@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.executables = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
 
   s.add_dependency "tilt", "~> 2.0.0"
+  s.add_dependency "erubi"
 
   s.add_development_dependency "rspec", "~> 3.5"
 

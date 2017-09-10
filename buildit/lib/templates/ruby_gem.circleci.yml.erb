@@ -1,1 +1,10 @@
-nothing...
+"<%= app_name %>/test":
+  docker:
+    - image: circleci/ruby:<%= ruby_version %>
+      environment:
+        RAILS_ENV: test
+  steps:
+    - run:
+        command: |
+          cd <%= app_name %>
+          echo "hi"

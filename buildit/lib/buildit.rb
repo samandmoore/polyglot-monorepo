@@ -6,8 +6,21 @@ require 'tilt/erubi'
 require 'pp'
 
 module Buildit::Configs
-  class RubyApp
-    attr_reader :app_name
+  class Base
+    def render
+      template_name = "#{app_type}.circleci.yml.erb"
+      template_path = File.expand_path("templates/#{template_name}", __dir__)
+      template = Tilt::ErubiTemplate.new(template_path)
+      template.render(self)
+    end
+
+    def app_type
+      config['type']
+    end
+  end
+
+  class RubyApp < Base
+    attr_reader :app_name, :config
 
     def initialize(app_name:, config: {})
       @app_name = app_name
@@ -19,54 +32,104 @@ module Buildit::Configs
     end
   end
 
-  class RubyGem
-    attr_reader :app_name
+  class RubyGem < Base
+    attr_reader :app_name, :config
 
     def initialize(app_name:, config: {})
       @app_name = app_name
       @config = config
     end
+
+    def ruby_version
+      @config.fetch 'ruby'
+    end
+  end
+end
+
+class AppConfig
+  attr_reader :app_name, :path
+
+  def initialize(path:)
+    @path = path
+    @app_name = File.basename(path)
+  end
+
+  def render
+    config = Helper.constantize(app_type).new(app_name: app_name, config: raw_config)
+    config.render
+  end
+
+  private
+
+  def app_type
+    raw_config['type']
+  end
+
+  def raw_config
+    @raw_config ||= YAML.load_file(File.join(path, 'buildit.yml'))
+  end
+end
+
+class Workflow
+  attr_reader :app_configs
+
+  def initialize(app_configs:)
+    @app_configs = app_configs
+  end
+
+  def name
+    "all"
+  end
+end
+
+class WorkflowRenderer
+  attr_reader :workflow
+
+  def initialize(workflow)
+    @workflow = workflow
+  end
+
+  def render
+    template_name = "workflow.circleci.yml.erb"
+    template_path = File.expand_path("templates/#{template_name}", __dir__)
+    template = Tilt::ErubiTemplate.new(template_path)
+    template.render(workflow)
   end
 end
 
 class Buildit::Runner
   def perform
-    find_configs.each do |path|
-      Logger.info path
-      raw_config = YAML.load_file(File.join(path, 'buildit.yml'))
-      Logger.info raw_config
-      app_type = raw_config['type']
-      app_name = File.basename(path)
-      config = constantize(app_type).new(app_name: app_name, config: raw_config)
-      template_name = "#{app_type}.circleci.yml.erb"
-      template_path = File.expand_path("templates/#{template_name}", __dir__)
-      Logger.info template_path
-      template = Tilt::ErubiTemplate.new(template_path)
-      Logger.info template.render(config)
-    end
-
-    # we will wanna do this process for each config file in the repo
-    # and then we will need to do some sort of higher level config
-    # processing because we need to generate the workflows based
-    # on the cross-project dependencies
+    dir = ARGV.first || Dir.pwd
+    workflow = Workflow.new(app_configs: find_configs(dir))
+    Logger.debug workflow, pretty: true
+    Logger.info WorkflowRenderer.new(workflow).render
   end
 
   private
 
-  def constantize(value)
-    Buildit::Configs.const_get(
-      value.split('_').map(&:capitalize).join
-    )
-  end
-
-  def find_configs(dir: Dir.pwd)
+  def find_configs(dir)
     if File.exists?(File.join(dir, 'buildit.yml'))
-      [dir]
+      [AppConfig.new(path: dir)]
     else
       # Find ./some_project/rocket.yml and extract some_project
       Dir.glob(File.join(dir, '*', 'buildit.yml'))
         .map { |f| File.dirname(f) }
+        .map { |path| AppConfig.new(path: path) }
     end
+  end
+end
+
+module Helper
+  def self.constantize(value)
+    Buildit::Configs.const_get(
+      value.split('_').map(&:capitalize).join
+    )
+  end
+end
+
+module YamlHelper
+  def self.indent(content, spaces: 2)
+    content.split("\n").map { |l| " " * spaces + l }.join("\n")
   end
 end
 

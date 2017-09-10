@@ -1,0 +1,13 @@
+version: 2
+jobs:
+<% app_configs.each do |config| %>
+<%= YamlHelper.indent config.render, spaces: 2 %>
+<% end %>
+
+workflows:
+  version: 2
+  "<%= name %>":
+    jobs:
+    <% app_configs.each do |config| %>
+      - <%= config.app_name %>
+    <% end %>
