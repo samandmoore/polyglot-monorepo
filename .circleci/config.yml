@@ -2,7 +2,7 @@ version: 2
 jobs:
   "local_gem-test":
     docker:
-      - image: circleci/ruby:2.3.1
+      - image: circleci/ruby:2.3.4
         environment:
           RAILS_ENV: test
     steps:
@@ -12,7 +12,7 @@ jobs:
             echo "hi"
   "rails_app-test":
     docker:
-      - image: circleci/ruby:2.3.1-node
+      - image: circleci/ruby:2.3.4-node
         environment:
           RAILS_ENV: test
           DATABASE_URL: postgresql://postgres@localhost/rails_app_test
@@ -46,7 +46,7 @@ jobs:
   
   "rails_app-build":
     docker:
-      - image: circleci/ruby:2.3.1-node
+      - image: circleci/ruby:2.3.4-node
     steps:
       - checkout
       - type: cache-restore
