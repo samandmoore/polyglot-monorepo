@@ -9,5 +9,7 @@ workflows:
   "<%= name %>":
     jobs:
     <% app_configs.each do |config| %>
-      - <%= config.app_name %>
+    <% config.job_names.each do |job| %>
+      - <%= job %>
+    <% end %>
     <% end %>

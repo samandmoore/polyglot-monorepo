@@ -1,0 +1,121 @@
+version: 2
+jobs:
+  "local_gem/test":
+    docker:
+      - image: circleci/ruby:2.4.1-node
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: local_gem-{{ checksum "local_gem/local_gem.gemspec" }}
+
+      # Bundle install dependencies
+      - run:
+          command: |
+            cd local_gem
+            bundle install --path vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: local_gem-{{ checksum "local_gem/local_gem.gemspec" }}
+        paths:
+          - local_gem/vendor/bundle
+
+      # Run rspec in parallel
+      - run:
+          command: |
+            cd local_gem
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out /tmp/test-results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # Save artifacts
+      - type: store_test_results
+        path: /tmp/test-results
+
+  "rails_app/test":
+    docker:
+      - image: circleci/ruby:2.4.1-node
+        environment:
+          RAILS_ENV: test
+          DATABASE_URL: postgresql://postgres@localhost/rails_app_test
+      - image: circleci/postgres:9.4.12-alpine
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+
+      # Bundle install dependencies
+      - run:
+          command: |
+            cd rails_app
+            bundle install --path vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+
+      # Database setup
+      - run:
+          command: |
+            cd rails_app
+            bundle exec rake db:create db:schema:load
+
+      # Run rspec in parallel
+      - run:
+          command: |
+            cd rails_app
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out /tmp/test-results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # Save artifacts
+      - type: store_test_results
+        path: /tmp/test-results
+
+  "rails_app/build":
+    docker:
+      - image: circleci/ruby:2.4.1-node
+    steps:
+      - setup_remote_docker
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+
+      # Bundle install dependencies
+      - run:
+          command: |
+            cd rails_app
+            bundle install --path vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+        paths:
+          - rails_app/vendor/bundle
+
+      - run:
+          command: |
+            ./buildits/ruby_app/build.sh rails_app
+            # ecr-login
+            # find-or-create ecr repo for rails_app
+            # docker push $ecr-repo/rails_app:$git_revision
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - "local_gem/test"
+      - "rails_app/build"
+      - "rails_app/test"

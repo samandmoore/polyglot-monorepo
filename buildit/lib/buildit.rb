@@ -30,6 +30,13 @@ module Buildit::Configs
     def ruby_version
       @config.fetch 'ruby'
     end
+
+    def job_names
+      %W(
+        #{app_name}-test
+        #{app_name}-build
+      )
+    end
   end
 
   class RubyGem < Base
@@ -43,6 +50,12 @@ module Buildit::Configs
     def ruby_version
       @config.fetch 'ruby'
     end
+
+    def job_names
+      %W(
+        #{app_name}-test
+      )
+    end
   end
 end
 
@@ -55,8 +68,15 @@ class AppConfig
   end
 
   def render
-    config = Helper.constantize(app_type).new(app_name: app_name, config: raw_config)
     config.render
+  end
+
+  def job_names
+    config.job_names
+  end
+
+  def config
+    @config ||= Helper.constantize(app_type).new(app_name: app_name, config: raw_config)
   end
 
   private
