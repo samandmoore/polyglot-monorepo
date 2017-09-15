@@ -24,11 +24,9 @@ jobs:
       - run:
           command: |
             cd local_gem
-            bundle exec rspec --profile 10 \
-                              --format RspecJunitFormatter \
-                              --out /tmp/test-results/rspec.xml \
-                              --format progress \
-                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+            SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
+            SPEC_OPTS="--profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress"
+            bundle exec rake
       - store_test_results:
           path: /tmp/test-results
           destination: test-results
@@ -65,15 +63,12 @@ jobs:
       - run:
           command: |
             cd rails_app
-            bundle exec rspec --profile 10 \
-                              --format RspecJunitFormatter \
-                              --out /tmp/test-results/rspec.xml \
-                              --format progress \
-                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+            export SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
+            export SPEC_OPTS="--profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress"
+            bundle exec rake
       - store_test_results:
           path: /tmp/test-results
           destination: test-results
-  
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
