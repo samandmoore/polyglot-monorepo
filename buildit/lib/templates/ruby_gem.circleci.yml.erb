@@ -7,13 +7,15 @@
   steps:
     - checkout
     - restore-cache:
-        key: <%= app_name %>-{{ checksum "<%= app_name %>/<%= app_name %>.gemspec" }}
+        keys:
+          - v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/<%= app_name %>.gemspec" }}
+          - v0-<%= app_name %>-deps-
     - run:
         command: |
           cd <%= app_name %>
-          bundle install --path vendor/bundle
+          bundle install --jobs 4 --path vendor/bundle
     - save-cache:
-        key: <%= app_name %>-{{ checksum "<%= app_name %>/<%= app_name %>.gemspec" }}
+        key: v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/<%= app_name %>.gemspec" }}
         paths:
           - <%= app_name %>/vendor/bundle
     - run:

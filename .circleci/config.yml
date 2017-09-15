@@ -9,13 +9,15 @@ jobs:
     steps:
       - checkout
       - restore-cache:
-          key: local_gem-{{ checksum "local_gem/local_gem.gemspec" }}
+          keys:
+            - v0-local_gem-deps-{{ checksum "local_gem/local_gem.gemspec" }}
+            - v0-local_gem-deps-
       - run:
           command: |
             cd local_gem
-            bundle install --path vendor/bundle
+            bundle install --jobs 4 --path vendor/bundle
       - save-cache:
-          key: local_gem-{{ checksum "local_gem/local_gem.gemspec" }}
+          key: v0-local_gem-deps-{{ checksum "local_gem/local_gem.gemspec" }}
           paths:
             - local_gem/vendor/bundle
       - run:
@@ -43,13 +45,15 @@ jobs:
     steps:
       - checkout
       - restore-cache:
-          key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+          keys:
+            - v0-rails_app-deps-{{ checksum "rails_app/Gemfile.lock" }}
+            - v0-rails_app-deps-
       - run:
           command: |
             cd rails_app
             bundle install --path vendor/bundle
       - save-cache:
-          key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+          key: v0-rails_app-deps-{{ checksum "rails_app/Gemfile.lock" }}
           paths:
             - rails_app/vendor/bundle
       - run:
@@ -78,13 +82,15 @@ jobs:
     steps:
       - checkout
       - restore-cache:
-          key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+          keys:
+            - v0-rails_app-deps-{{ checksum "rails_app/Gemfile.lock" }}
+            - v0-rails_app-deps-
       - run:
           command: |
             cd rails_app
             bundle install --path vendor/bundle
       - save-cache:
-          key: rails_app-{{ checksum "rails_app/Gemfile.lock" }}
+          key: v0-rails_app-deps-{{ checksum "rails_app/Gemfile.lock" }}
           paths:
             - rails_app/vendor/bundle
       - run:

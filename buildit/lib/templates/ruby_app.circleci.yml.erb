@@ -9,13 +9,15 @@
   steps:
     - checkout
     - restore-cache:
-        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+        keys:
+          - v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+          - v0-<%= app_name %>-deps-
     - run:
         command: |
           cd <%= app_name %>
           bundle install --path vendor/bundle
     - save-cache:
-        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+        key: v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/Gemfile.lock" }}
         paths:
           - <%= app_name %>/vendor/bundle
     - run:
@@ -44,13 +46,15 @@
   steps:
     - checkout
     - restore-cache:
-        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+        keys:
+          - v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+          - v0-<%= app_name %>-deps-
     - run:
         command: |
           cd <%= app_name %>
           bundle install --path vendor/bundle
     - save-cache:
-        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+        key: v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/Gemfile.lock" }}
         paths:
           - <%= app_name %>/vendor/bundle
     - run:
