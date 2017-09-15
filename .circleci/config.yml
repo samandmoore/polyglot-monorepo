@@ -1,6 +1,7 @@
 version: 2
 jobs:
   "local_gem-test":
+    parallelism: 2
     docker:
       - image: circleci/ruby:2.3.4
         environment:
@@ -35,6 +36,7 @@ jobs:
           path: /tmp/test-results
           destination: test-results
   "rails_app-test":
+    parallelism: 2
     docker:
       - image: circleci/ruby:2.3.4-node
         environment:

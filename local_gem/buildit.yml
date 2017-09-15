@@ -1,4 +1,2 @@
 type: ruby_gem
 ruby: 2.3.4
-services:
-  - "postgres:9.4.12"
