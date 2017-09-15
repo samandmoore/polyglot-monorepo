@@ -12,6 +12,7 @@
           - v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/<%= app_name %>.gemspec" }}
           - v0-<%= app_name %>-deps-
     - run:
+        name: install dependencies
         command: |
           cd <%= app_name %>
           bundle install --jobs 4 --path vendor/bundle
@@ -20,10 +21,11 @@
         paths:
           - <%= app_name %>/vendor/bundle
     - run:
+        name: run tests
         command: |
           cd <%= app_name %>
-          SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
-          SPEC_OPTS="--profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress"
+          export SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
+          export SPEC_OPTS="--profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress"
           bundle exec rake
     - store_test_results:
         path: /tmp/test-results

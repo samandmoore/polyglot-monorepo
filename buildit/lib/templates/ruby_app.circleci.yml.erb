@@ -14,6 +14,7 @@
           - v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/Gemfile.lock" }}
           - v0-<%= app_name %>-deps-
     - run:
+        name: install dependencies
         command: |
           cd <%= app_name %>
           bundle install --path vendor/bundle
@@ -22,10 +23,12 @@
         paths:
           - <%= app_name %>/vendor/bundle
     - run:
+        name: setup db
         command: |
           cd <%= app_name %>
           bundle exec rake db:create db:schema:load
     - run:
+        name: run tests
         command: |
           cd <%= app_name %>
           export SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
@@ -48,6 +51,7 @@
           - v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/Gemfile.lock" }}
           - v0-<%= app_name %>-deps-
     - run:
+        name: install dependencies
         command: |
           cd <%= app_name %>
           bundle install --path vendor/bundle
@@ -56,5 +60,6 @@
         paths:
           - <%= app_name %>/vendor/bundle
     - run:
+        name: build tarball
         command: |
           tar -z --exclude='.git' -C <%= app_name %> -cf slug.tgz .

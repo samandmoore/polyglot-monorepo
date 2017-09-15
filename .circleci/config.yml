@@ -14,6 +14,7 @@ jobs:
             - v0-local_gem-deps-{{ checksum "local_gem/local_gem.gemspec" }}
             - v0-local_gem-deps-
       - run:
+          name: install dependencies
           command: |
             cd local_gem
             bundle install --jobs 4 --path vendor/bundle
@@ -22,10 +23,11 @@ jobs:
           paths:
             - local_gem/vendor/bundle
       - run:
+          name: run tests
           command: |
             cd local_gem
-            SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
-            SPEC_OPTS="--profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress"
+            export SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
+            export SPEC_OPTS="--profile 10 --format RspecJunitFormatter --out /tmp/test-results/rspec.xml --format progress"
             bundle exec rake
       - store_test_results:
           path: /tmp/test-results
@@ -49,6 +51,7 @@ jobs:
             - v0-rails_app-deps-{{ checksum "rails_app/Gemfile.lock" }}
             - v0-rails_app-deps-
       - run:
+          name: install dependencies
           command: |
             cd rails_app
             bundle install --path vendor/bundle
@@ -57,10 +60,12 @@ jobs:
           paths:
             - rails_app/vendor/bundle
       - run:
+          name: setup db
           command: |
             cd rails_app
             bundle exec rake db:create db:schema:load
       - run:
+          name: run tests
           command: |
             cd rails_app
             export SPEC=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings | tr '\r\n' ' ')
@@ -83,6 +88,7 @@ jobs:
             - v0-rails_app-deps-{{ checksum "rails_app/Gemfile.lock" }}
             - v0-rails_app-deps-
       - run:
+          name: install dependencies
           command: |
             cd rails_app
             bundle install --path vendor/bundle
@@ -91,6 +97,7 @@ jobs:
           paths:
             - rails_app/vendor/bundle
       - run:
+          name: build tarball
           command: |
             tar -z --exclude='.git' -C rails_app -cf slug.tgz .
 
