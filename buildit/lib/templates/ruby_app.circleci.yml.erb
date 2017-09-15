@@ -3,20 +3,21 @@
     - image: circleci/ruby:<%= ruby_version %>-node
       environment:
         RAILS_ENV: test
+        RACK_ENV: test
         DATABASE_URL: postgresql://postgres@localhost/<%= app_name %>_test
     - image: circleci/postgres:9.4.12-alpine
   steps:
     - checkout
-    - type: cache-restore
-      key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+    - restore-cache:
+        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
     - run:
         command: |
           cd <%= app_name %>
           bundle install --path vendor/bundle
-    - type: cache-save
-      key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
-      paths:
-        - <%= app_name %>/vendor/bundle
+    - save-cache:
+        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+        paths:
+          - <%= app_name %>/vendor/bundle
     - run:
         command: |
           cd <%= app_name %>
@@ -29,24 +30,29 @@
                             --out /tmp/test-results/rspec.xml \
                             --format progress \
                             $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-    - type: store_test_results
-      path: /tmp/test-results
+    - store_test_results:
+        path: /tmp/test-results
+        destination: test-results
+
+    - store_artifacts:
+        path: /tmp/test-results
+        destination: test-results
 
 "<%= app_name %>-build":
   docker:
     - image: circleci/ruby:<%= ruby_version %>-node
   steps:
     - checkout
-    - type: cache-restore
-      key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+    - restore-cache:
+        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
     - run:
         command: |
           cd <%= app_name %>
           bundle install --path vendor/bundle
-    - type: cache-save
-      key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
-      paths:
-        - <%= app_name %>/vendor/bundle
+    - save-cache:
+        key: <%= app_name %>-{{ checksum "<%= app_name %>/Gemfile.lock" }}
+        paths:
+          - <%= app_name %>/vendor/bundle
     - run:
         command: |
           tar -z --exclude='.git' -C <%= app_name %> -cf slug.tgz .
