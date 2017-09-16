@@ -23,11 +23,6 @@
         paths:
           - <%= app_name %>/vendor/bundle
     - run:
-        name: setup db
-        command: |
-          cd <%= app_name %>
-          bundle exec rake db:create db:schema:load
-    - run:
         name: run tests
         command: |
           cd <%= app_name %>

@@ -4,3 +4,7 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+task 'test:prepare' => ['db:create', 'db:schema:load']
+task(:default).clear
+task default: %i(spec)
