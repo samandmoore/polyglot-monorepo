@@ -38,12 +38,14 @@ jobs:
   "rails_app-test":
     parallelism: 2
     docker:
-      - image: circleci/ruby:2.3.4-node
+      - image: circleci/ruby:2.3.4-node-browsers
         environment:
           RAILS_ENV: test
           RACK_ENV: test
-          DATABASE_URL: postgresql://postgres@localhost/rails_app_test
       - image: circleci/postgres:9.4.12-alpine
+        environment:
+          POSTGRES_USER: circleci
+          POSTGRES_DB: rails_app_test
     steps:
       - checkout
       - restore-cache:
