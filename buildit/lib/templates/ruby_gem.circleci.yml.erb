@@ -15,7 +15,8 @@
         name: install dependencies
         command: |
           cd <%= app_name %>
-          bundle install --jobs 4 --path vendor/bundle
+          bundle check --path vendor/bundle \
+            || bundle install --jobs 4 --path vendor/bundle
     - save-cache:
         key: v0-<%= app_name %>-deps-{{ checksum "<%= app_name %>/<%= app_name %>.gemspec" }}
         paths:
