@@ -60,11 +60,6 @@ jobs:
           paths:
             - rails_app/vendor/bundle
       - run:
-          name: setup db
-          command: |
-            cd rails_app
-            bundle exec rake db:create db:schema:load
-      - run:
           name: run tests
           command: |
             cd rails_app
